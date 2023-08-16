@@ -93,7 +93,13 @@ function Model(props: any) {
   });
 
   return (
-    <group {...props} dispose={null}>
+    <group
+      {...props}
+      dispose={null}
+      rotation={[0, Math.PI, 0]}
+      position={[0, -1, 0]}
+      scale={[1.5, 1.5, 1.5]}
+    >
       <mesh
         geometry={nodes.portalCircle.geometry}
         position={[0, 0.78, 1.6]}
