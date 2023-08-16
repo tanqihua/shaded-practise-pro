@@ -1,6 +1,11 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useRef } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { OrbitControls, shaderMaterial, useTexture } from "@react-three/drei";
+import {
+  OrbitControls,
+  shaderMaterial,
+  useGLTF,
+  useTexture,
+} from "@react-three/drei";
 import { Color } from "three";
 
 type Props = {};
@@ -13,7 +18,7 @@ const day1 = (props: Props) => {
         height: "100svh",
       }}
     >
-      <Box />
+      <Model />
       <OrbitControls />
     </Canvas>
   );
@@ -64,7 +69,11 @@ void main(){
    	gl_Position = projectedPosition;
 }`;
 
-const Box = () => {
+function Model(props: any) {
+  const portalMaterial = useRef();
+  const bakedTexture = useTexture("/baked-02.jpeg");
+  const { nodes } = useGLTF("/portal-2.glb") as any;
+
   const texture = useTexture("/wall.jpg");
 
   const uniforms = useMemo(
@@ -82,17 +91,42 @@ const Box = () => {
   useFrame(({ clock }) => {
     uniforms.u_time.value = clock.getElapsedTime();
   });
+
   return (
-    <mesh>
-      <boxGeometry attach="geometry" args={[2, 2, 2]} />
-      <shaderMaterial
-        fragmentShader={fragmentShader}
-        vertexShader={vertexShader}
-        attach="material"
-        uniforms={uniforms}
+    <group {...props} dispose={null}>
+      <mesh
+        geometry={nodes.portalCircle.geometry}
+        position={[0, 0.78, 1.6]}
+        rotation={[-Math.PI / 2, 0, 0]}
+      >
+        <shaderMaterial
+          fragmentShader={fragmentShader}
+          vertexShader={vertexShader}
+          attach="material"
+          uniforms={uniforms}
+        />
+      </mesh>
+      <mesh
+        geometry={nodes.lampLightL.geometry}
+        material-color="#f0bf94"
+        position={[0.89, 1.07, -0.14]}
+        scale={[0.07, 0.11, 0.07]}
       />
-    </mesh>
+      <mesh
+        geometry={nodes.lampLightR.geometry}
+        material-color="#f0bf94"
+        position={[-0.98, 1.07, -0.14]}
+        scale={[-0.07, 0.11, 0.07]}
+      />
+      <mesh
+        geometry={nodes.baked.geometry}
+        position={[0.9, 0.34, -1.47]}
+        rotation={[0, 0.14, 0]}
+      >
+        <meshBasicMaterial map={bakedTexture} map-flipY={false} />
+      </mesh>
+    </group>
   );
-};
+}
 
 export default day1;
