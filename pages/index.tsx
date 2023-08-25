@@ -4,7 +4,7 @@ import styles from "../styles/Home.module.css";
 import { useRouter } from "next/router";
 
 export default function Home() {
-  const showcase = ["day1", "day2", "day3", "day4"];
+  const showcase = ["day1", "day2", "day3", "day4", "day5"];
   const router = useRouter();
   return (
     <div
